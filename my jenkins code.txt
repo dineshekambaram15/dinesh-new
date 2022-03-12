@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Git clone') {
+            steps {
+                git credentialsId: 'Git-devops-cred', url: 'https://github.com/Santhosh-SNTS/DevOps-repo.git'
+            }
+        }
+        
+        stage('Docker build') {
+            steps {
+                sh "docker build -t santhoshdocker11/devops-task:01 ."
+            }
+        }
+        stage('Docker stop') {
+            steps {
+                sh 'docker stop $(docker ps -a -q)'
+            }
+        }
+        stage('Docker remove') {
+            steps {
+                sh 'docker rm $(docker ps -a -q)'
+            }
+        }
+        stage('Docker run') {
+            steps {
+                sh "docker run -itd --name=sntscondainer -p 3214:5000 santhoshdocker11/devops-task:01"
+            }
+        }
+        stage('Docker image remove') {
+            steps {
+                sh "docker image prune -f"
+                
+            }
+        }
+    }
+}
